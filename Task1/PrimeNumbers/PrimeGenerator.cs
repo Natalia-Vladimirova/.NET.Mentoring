@@ -10,13 +10,10 @@ namespace PrimeNumbers
         {
             var result = new List<int>();
 
-            int currentPrimeNumber = 2;
-
             for (int i = 0; i < count; i++)
             {
+                var currentPrimeNumber = GetNextPrimeNumber(result);
                 result.Add(currentPrimeNumber);
-
-                currentPrimeNumber = GetNextPrimeNumber(result);
             }
 
             return result;
@@ -36,6 +33,11 @@ namespace PrimeNumbers
 
         private int GetNextPrimeNumber(IList<int> previousPrimeNumbers)
         {
+            if (previousPrimeNumbers.Count == 0)
+            {
+                return 2;
+            }
+
             int nextPrimeNumber = previousPrimeNumbers.Last();
 
             while (true)
