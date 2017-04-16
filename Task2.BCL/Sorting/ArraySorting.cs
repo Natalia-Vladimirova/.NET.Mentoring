@@ -6,7 +6,7 @@ namespace Sorting
     {
         public static void Sort(string[] array, bool ascSortOrder = true)
         {
-            var comparer = StringComparer.InvariantCulture;
+            var comparer = StringComparer.Ordinal;
 
             for (int i = 0; i < array.Length - 1; i++)
             {
