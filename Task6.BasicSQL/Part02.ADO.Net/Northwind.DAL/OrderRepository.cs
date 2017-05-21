@@ -121,7 +121,7 @@ namespace Northwind.DAL
 
                     DeleteOrderDetails(command);
 
-                    return  DeleteOrder(command);
+                    return DeleteOrder(command);
                 }
             }
         }
@@ -196,10 +196,10 @@ namespace Northwind.DAL
         {
             using (IDbConnection dbConnection = _dbProviderFactory.CreateConnection())
             {
-                int orderId;
-
                 dbConnection.ConnectionString = _connectionString;
                 dbConnection.Open();
+
+                int orderId;
 
                 using (IDbCommand command = dbConnection.CreateCommand())
                 {
@@ -230,22 +230,37 @@ namespace Northwind.DAL
                     command.CommandType = CommandType.Text;
                     command.CommandText = commandText;
 
-                    var parameters = new Dictionary<string, object>();
-                    
-                    foreach (var details in orderDetails)
+                    var parameters = new Dictionary<string, DbType>
                     {
-                        parameters["@OrderId"] = orderId;
-                        parameters["@ProductId"] = details.ProductId;
-                        parameters["@UnitPrice"] = details.UnitPrice;
-                        parameters["@Quantity"] = details.Quantity;
-                        parameters["@Discount"] = details.Discount;
+                        ["@OrderId"] = DbType.Int32,
+                        ["@ProductId"] = DbType.Int32,
+                        ["@UnitPrice"] = DbType.Decimal,
+                        ["@Quantity"] = DbType.Int16,
+                        ["@Discount"] = DbType.Single
+                    };
 
-                        CreateParameters(command, parameters);
+                    CreateEmptyParameters(command, parameters);
 
-                        command.ExecuteNonQuery();
+                    ((IDbDataParameter) command.Parameters["@OrderId"]).Value = orderId;
+
+                    try
+                    {
+                        foreach (var details in orderDetails)
+                        {
+                            ((IDbDataParameter) command.Parameters["@ProductId"]).Value = details.ProductId;
+                            ((IDbDataParameter) command.Parameters["@UnitPrice"]).Value = details.UnitPrice;
+                            ((IDbDataParameter) command.Parameters["@Quantity"]).Value = details.Quantity;
+                            ((IDbDataParameter) command.Parameters["@Discount"]).Value = details.Discount;
+
+                            command.ExecuteNonQuery();
+                        }
+
+                        transaction.Commit();
                     }
-
-                    transaction.Commit();
+                    catch (DbException)
+                    {
+                        transaction.Rollback();
+                    }
                 }
             }
         }
@@ -266,6 +281,19 @@ namespace Northwind.DAL
 
                     return command.ExecuteNonQuery() > 0;
                 }
+            }
+        }
+
+        private void CreateEmptyParameters(IDbCommand command, IDictionary<string, DbType> parameters)
+        {
+            if (parameters == null || !parameters.Any()) return;
+
+            foreach (var key in parameters.Keys)
+            {
+                var param = command.CreateParameter();
+                param.ParameterName = key;
+                param.DbType = parameters[key];
+                command.Parameters.Add(param);
             }
         }
 

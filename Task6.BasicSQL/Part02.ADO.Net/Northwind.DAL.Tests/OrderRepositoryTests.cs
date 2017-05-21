@@ -64,9 +64,14 @@ namespace Northwind.DAL.Tests
         [Test]
         public void InsertOrderWithDetailsTest()
         {
-            var orderDetails = new OrderDetails
+            var firstDetails = new OrderDetails
             {
                 ProductId = 41, Quantity = 13, Discount = 0.13f, UnitPrice = 10.3m
+            };
+
+            var secondDetails = new OrderDetails
+            {
+                ProductId = 51, Quantity = 33, Discount = 0.23f, UnitPrice = 12.3m
             };
 
             var newOrder = new Order
@@ -74,7 +79,7 @@ namespace Northwind.DAL.Tests
                 ShipCountry = "Another country",
                 ShipCity = "City",
                 ShipAddress = "Address",
-                Details = new List<OrderDetails> { orderDetails }
+                Details = new List<OrderDetails> { firstDetails, secondDetails }
             };
 
             int id = _orderRepository.CreateOrder(newOrder);
@@ -85,20 +90,20 @@ namespace Northwind.DAL.Tests
             Assert.AreEqual(newOrder.ShipCity, insertedOrder.ShipCity);
             Assert.AreEqual(newOrder.ShipAddress, insertedOrder.ShipAddress);
 
-            Assert.AreEqual(1, insertedOrder.Details.Count);
+            Assert.AreEqual(2, insertedOrder.Details.Count);
 
-            var firstDetails = insertedOrder.Details.First();
+            var actualDetails = insertedOrder.Details.First();
 
-            Assert.AreEqual(id, firstDetails.OrderId);
-            Assert.AreEqual(orderDetails.ProductId, firstDetails.ProductId);
-            Assert.AreEqual(orderDetails.Quantity, firstDetails.Quantity);
-            Assert.AreEqual(orderDetails.Discount, firstDetails.Discount);
-            Assert.AreEqual(orderDetails.UnitPrice, firstDetails.UnitPrice);
+            Assert.AreEqual(id, actualDetails.OrderId);
+            CheckDetails(firstDetails, actualDetails);
 
-            Assert.IsNotNull(firstDetails.Product);
+            actualDetails = insertedOrder.Details.Last();
+
+            Assert.AreEqual(id, actualDetails.OrderId);
+            CheckDetails(secondDetails, actualDetails);
         }
 
-        //to use this method pass to it id of existing order (where status is New)
+        //to use this method pass to it id of existing order with details (where status is New)
         [TestCase(11101)]
         public void UpdateOrderWithDetailsTest(int orderId)
         {
@@ -162,6 +167,15 @@ namespace Northwind.DAL.Tests
 
             Assert.AreEqual(dateProcessed, order.OrderDate);
             Assert.AreEqual(dateCompleted, order.ShippedDate);
+        }
+
+        private void CheckDetails(OrderDetails expected, OrderDetails actual)
+        {
+            Assert.AreEqual(expected.ProductId, actual.ProductId);
+            Assert.AreEqual(expected.Quantity, actual.Quantity);
+            Assert.AreEqual(expected.Discount, actual.Discount);
+            Assert.AreEqual(expected.UnitPrice, actual.UnitPrice);
+            Assert.IsNotNull(actual.Product);
         }
     }
 }
