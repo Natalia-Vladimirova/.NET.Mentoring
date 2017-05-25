@@ -27,5 +27,8 @@ group by CustomerID, EmployeeID
 
 
 --2.2.6
-select EmployeeID as Seller, (select EmployeeID from Employees where e.ReportsTo = EmployeeID) as Manager
+select e.EmployeeID as Seller, e.FirstName + ' ' + e. LastName as SellerName,
+		m.EmployeeID as Manager, m.FirstName + ' ' + m.LastName as ManagerName
 from Employees e
+left join Employees m
+on e.ReportsTo = m.EmployeeID
