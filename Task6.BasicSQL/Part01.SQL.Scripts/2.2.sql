@@ -15,7 +15,11 @@ order by count(*) desc
 
 
 --2.2.3
-select EmployeeID, CustomerID, count(*) as Amount from Orders
+select o.EmployeeID as SellerID, 
+		(select FirstName + ' ' + LastName from Employees where EmployeeID = o.EmployeeID) as SellerName, 
+		CustomerID as Customer, 
+		count(*) as Amount 
+from Orders o
 where year(OrderDate) = '1998'
 group by CustomerID, EmployeeID
 
