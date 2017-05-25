@@ -25,9 +25,31 @@ group by CustomerID, EmployeeID
 
 
 --2.2.4
+select * 
+from (select City, 
+		(select stuff(
+			(select ', ' + ContactName
+				from Customers
+				where City = c.City
+				for xml path('')), 1, 2, '')) as Customers,
+		(select stuff(
+			(select ', ' + e.FirstName + ' ' + e.LastName
+				from Employees e
+				where City = c.City
+				for xml path('')), 1, 2, '')) as Sellers
+from Customers c group by City) as r
+where r.Sellers is not null and r.Customers is not null
 
 
 --2.2.5
+select City, (select stuff(
+				(select ', ' + ContactName
+				 from Customers
+				 where City = c.City
+				 for xml path('')), 1, 2, '')) as Customers
+from Customers c
+group by City
+having count(*) > 1
 
 
 --2.2.6

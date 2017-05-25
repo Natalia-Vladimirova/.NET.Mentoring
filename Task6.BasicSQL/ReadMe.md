@@ -45,7 +45,7 @@ Results of the task can be arranged as sql scripts or can be added to SSDT proje
 1. Find the number of orders in Orders table using grouping by year. The query should return two columns with Year and Total names. Write a check query which calculates the number of all orders.
 2. Find the number of orders in Orders table using grouping by seller. An order for specified seller is any record in Orders table which has value in EmployeeID column. The query should return a column with seller name named 'Seller' (use LastName and FirstName concatenation; this string should be obtained by a separate query in the main one. Also, the main query should use grouping by EmployeeID) and a column with a number of orders named 'Amount'. The query result should be ordered by the number of orders descending.
 3. Find the number of orders in Orders table using grouping by seller and customer. Find this only for orders made in 1998 year.
-4. Find the number of customers and sellers who live in the same city. If only one or several sellers or ony one or several customers live in a city such information should not appear in the query result. Do not use JOIN operator.
+4. Find customers and sellers who live in the same city. If only one or several sellers or only one or several customers live in a city such information should not appear in the query result. Do not use JOIN operator.
 5. Find all customers who live in the same city.
 6. Find managers for each employee in Employees table.
 
