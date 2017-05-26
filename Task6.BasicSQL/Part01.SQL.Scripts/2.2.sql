@@ -20,7 +20,7 @@ select o.EmployeeID as SellerID,
 		CustomerID as Customer, 
 		count(*) as Amount 
 from Orders o
-where year(OrderDate) = '1998'
+where year(OrderDate) = 1998
 group by CustomerID, EmployeeID
 
 
