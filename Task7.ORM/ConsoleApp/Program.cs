@@ -122,7 +122,7 @@ namespace ConsoleApp
         {
             foreach (var product in products)
             {
-                Console.WriteLine($"Id: {product.Id}, Name: {product.ProductName}"); //Error	8	Unexpected character '$'
+                Console.WriteLine($"Id: {product.Id}, Name: {product.ProductName}");
                 Console.WriteLine(product.Category == null ? "\tNo category" : $"\tCategory: {product.Category.Id} - {product.Category.Name}");
                 Console.WriteLine(product.Supplier == null ? "\tNo supplier" : $"\tSupplier: {product.Supplier.Id} - {product.Supplier.CompanyName}");
             }
