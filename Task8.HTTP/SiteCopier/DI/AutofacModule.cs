@@ -25,8 +25,12 @@ namespace SiteCopier.DI
                 .AsImplementedInterfaces()
                 .SingleInstance();
 
-            builder.RegisterType<FileSaver>()
-                .WithParameter("logger", LogManager.GetLogger(nameof(FileSaver)))
+            builder.RegisterType<GeneratedFileSaver>()
+                .WithParameter("logger", LogManager.GetLogger(nameof(GeneratedFileSaver)))
+                .AsImplementedInterfaces()
+                .SingleInstance();
+
+            builder.RegisterType<UsualFileSaver>()
                 .AsImplementedInterfaces()
                 .SingleInstance();
 

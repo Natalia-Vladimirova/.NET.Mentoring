@@ -5,11 +5,11 @@ using SiteCopier.Interfaces;
 
 namespace SiteCopier
 {
-    public class FileSaver : IFileSaver
+    public class GeneratedFileSaver : IFileSaver
     {
         private readonly ILogger _logger;
 
-        public FileSaver(ILogger logger)
+        public GeneratedFileSaver(ILogger logger)
         {
             _logger = logger;
         }

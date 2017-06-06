@@ -64,6 +64,8 @@ namespace SiteCopier
             var lastSegment = uri.Segments.Last();
 
             var extension = Path.GetExtension(lastSegment)?.TrimStart('.');
+
+            if (string.IsNullOrWhiteSpace(extension)) return true;
             
             return resourceExtensions.Any(x => string.Equals(x, extension, StringComparison.OrdinalIgnoreCase));
         }

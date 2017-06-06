@@ -54,17 +54,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DI\AutofacModule.cs" />
-    <Compile Include="FileSaver.cs" />
+    <Compile Include="GeneratedFileSaver.cs" />
     <Compile Include="HttpDownloader.cs" />
     <Compile Include="Interfaces\IDownloader.cs" />
     <Compile Include="Interfaces\IFileSaver.cs" />
     <Compile Include="Interfaces\ILinkParser.cs" />
+    <Compile Include="Interfaces\ISaver.cs" />
     <Compile Include="Interfaces\ISiteDownloader.cs" />
     <Compile Include="HtmlLinkParser.cs" />
     <Compile Include="SiteDownloader.cs" />
     <Compile Include="Models\DomainTransfer.cs" />
     <Compile Include="Models\DownloadOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UsualFileSaver.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

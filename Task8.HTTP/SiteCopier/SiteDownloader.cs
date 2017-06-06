@@ -14,6 +14,7 @@ namespace SiteCopier
     {
         private readonly ILinkParser _linkParser;
         private readonly IFileSaver _fileSaver;
+        private readonly ISaver _saver;
         private readonly IDownloader _downloader;
         private readonly ILogger _logger;
         private readonly Uri _startUri;
@@ -21,11 +22,13 @@ namespace SiteCopier
         private readonly int _referenceDepth;
         private readonly IList<string> _extensions;
         private readonly DomainTransfer _transferType;
+        private readonly IDictionary<string, string> _linksMapping;
 
-        public SiteDownloader(ILinkParser linkParser, IFileSaver fileSaver, IDownloader downloader, ILogger logger, DownloadOptions options)
+        public SiteDownloader(ILinkParser linkParser, IFileSaver fileSaver, ISaver saver, IDownloader downloader, ILogger logger, DownloadOptions options)
         {
             _linkParser = linkParser;
             _fileSaver = fileSaver;
+            _saver = saver;
             _downloader = downloader;
             _logger = logger;
             _startUri = new Uri(options.StartUri);
@@ -33,13 +36,16 @@ namespace SiteCopier
             _referenceDepth = options.ReferenceDepth;
             _extensions = GetExtensionsFromString(options.ExtensionRestriction);
             _transferType = options.DomainTransfer;
+            _linksMapping = new Dictionary<string, string>();
         }
 
         public async void Load()
         {
             await Load(_startUri, 0);
-            _logger.Info("Downloaded!");
-
+            _logger.Info("Save mappings...");
+            var mappings = _linksMapping.Select((x, i) => $"{i + 1}\t{x.Key}\t-\t{x.Value}");
+            _saver.Save(mappings.ToArray(), _downloadPath, "mapping.txt");
+            _logger.Info("Ready!");
         }
 
         private async Task Load(Uri uri, int currentDepth)
@@ -55,7 +61,10 @@ namespace SiteCopier
                     ? _downloadPath
                     : Path.Combine(_downloadPath, $"level{currentDepth}");
 
-                _fileSaver.Save(byteContent, pathToSave, string.IsNullOrWhiteSpace(extension) ? "html" : extension);
+                var fileName = _fileSaver.Save(byteContent, pathToSave, string.IsNullOrWhiteSpace(extension) ? "html" : extension);
+
+                string fullPath = Path.Combine(pathToSave, fileName);
+                _linksMapping.Add(fullPath, uri.OriginalString);
 
                 if (currentDepth >= _referenceDepth) return;
 
@@ -64,6 +73,12 @@ namespace SiteCopier
 
                 foreach (var link in FilterLinks(links, _transferType))
                 {
+                    if (_linksMapping.Select(x => x.Value).FirstOrDefault(x => x.Equals(link.OriginalString)) != null)
+                    {
+                        _logger.Info($"Duplicate link {link.OriginalString}");
+                        continue;
+                    }
+
                     await Load(link, currentDepth + 1);
                 }
             }
@@ -90,7 +105,7 @@ namespace SiteCopier
                 case DomainTransfer.InsideCurrentDomain:
                     return links.Where(x => x.Host.Equals(_startUri.Host, StringComparison.OrdinalIgnoreCase));
                 case DomainTransfer.InsideCurrentPath:
-                    return links.Where(x => GetUriPath(x).Equals(GetUriPath(_startUri), StringComparison.OrdinalIgnoreCase));
+                    return links.Where(x => x.OriginalString.Contains(GetUriPath(_startUri)));
                 default:
                     return links;
             }
@@ -100,7 +115,13 @@ namespace SiteCopier
         {
             var path = uri.AbsolutePath;
             var extension = Path.GetExtension(path);
-            int extensionIndex = path.LastIndexOf(extension, StringComparison.OrdinalIgnoreCase);
+
+            if (string.IsNullOrWhiteSpace(extension))
+            {
+                return string.Concat(uri.Host, path);
+            }
+
+            int extensionIndex = path.LastIndexOf("/", StringComparison.OrdinalIgnoreCase);
             return string.Concat(uri.Host, path.Substring(0, extensionIndex));
         }
     }
