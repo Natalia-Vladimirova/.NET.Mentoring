@@ -71,7 +71,7 @@ namespace SiteCopier
                 var content = Encoding.UTF8.GetString(byteContent);
                 var links = _linkParser.GetLinks(content, _extensions);
 
-                foreach (var link in FilterLinks(links, _transferType))
+                foreach (var link in _linkParser.FilterLinks(links, _transferType, _startUri))
                 {
                     if (_linksMapping.Select(x => x.Value).FirstOrDefault(x => x.Equals(link.OriginalString)) != null)
                     {
@@ -96,33 +96,6 @@ namespace SiteCopier
                 .Split(new [] {","}, StringSplitOptions.RemoveEmptyEntries)
                 .Select(x => x.Trim().ToLowerInvariant())
                 .ToList();
-        }
-
-        private IEnumerable<Uri> FilterLinks(IList<Uri> links, DomainTransfer transferType)
-        {
-            switch (transferType)
-            {
-                case DomainTransfer.InsideCurrentDomain:
-                    return links.Where(x => x.Host.Equals(_startUri.Host, StringComparison.OrdinalIgnoreCase));
-                case DomainTransfer.InsideCurrentPath:
-                    return links.Where(x => x.OriginalString.Contains(GetUriPath(_startUri)));
-                default:
-                    return links;
-            }
-        }
-
-        private string GetUriPath(Uri uri)
-        {
-            var path = uri.AbsolutePath;
-            var extension = Path.GetExtension(path);
-
-            if (string.IsNullOrWhiteSpace(extension))
-            {
-                return string.Concat(uri.Host, path);
-            }
-
-            int extensionIndex = path.LastIndexOf("/", StringComparison.OrdinalIgnoreCase);
-            return string.Concat(uri.Host, path.Substring(0, extensionIndex));
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using CsQuery;
 using NLog;
 using SiteCopier.Interfaces;
+using SiteCopier.Models;
 
 namespace SiteCopier
 {
@@ -29,6 +30,19 @@ namespace SiteCopier
             result.AddRange(GetLinks("script", "src", cq, resourceExtensions));
 
             return result;
+        }
+
+        public IEnumerable<Uri> FilterLinks(IEnumerable<Uri> links, DomainTransfer transferType, Uri startUri)
+        {
+            switch (transferType)
+            {
+                case DomainTransfer.InsideCurrentDomain:
+                    return links.Where(x => x.Host.Equals(startUri.Host, StringComparison.OrdinalIgnoreCase));
+                case DomainTransfer.InsideCurrentPath:
+                    return links.Where(x => x.OriginalString.Contains(GetUriPath(startUri)));
+                default:
+                    return links;
+            }
         }
 
         private IEnumerable<Uri> GetLinks(string tag, string sourceAttribute, CQ csQuery, IList<string> resourceExtensions)
@@ -68,6 +82,20 @@ namespace SiteCopier
             if (string.IsNullOrWhiteSpace(extension)) return true;
             
             return resourceExtensions.Any(x => string.Equals(x, extension, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private string GetUriPath(Uri uri)
+        {
+            var path = uri.AbsolutePath;
+            var extension = Path.GetExtension(path);
+
+            if (string.IsNullOrWhiteSpace(extension))
+            {
+                return string.Concat(uri.Host, path);
+            }
+
+            int extensionIndex = path.LastIndexOf("/", StringComparison.OrdinalIgnoreCase);
+            return string.Concat(uri.Host, path.Substring(0, extensionIndex));
         }
     }
 }

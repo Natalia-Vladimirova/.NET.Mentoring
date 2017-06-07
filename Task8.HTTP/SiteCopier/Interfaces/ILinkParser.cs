@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SiteCopier.Models;
 
 namespace SiteCopier.Interfaces
 {
@@ -18,5 +19,22 @@ namespace SiteCopier.Interfaces
         /// A list of links found in the text with specified extensions.
         /// </returns>
         IList<Uri> GetLinks(string text, IList<string> resourceExtensions);
+
+        /// <summary>
+        /// Filter links according to domain tranfser type.
+        /// </summary>
+        /// <param name="links">
+        /// Links to be filtered.
+        /// </param>
+        /// <param name="transferType">
+        /// Transfer type of acceptable links.
+        /// </param>
+        /// <param name="startUri">
+        /// Uri of the start page.
+        /// </param>
+        /// <returns>
+        /// A filtered list of links.
+        /// </returns>
+        IEnumerable<Uri> FilterLinks(IEnumerable<Uri> links, DomainTransfer transferType, Uri startUri);
     }
 }
