@@ -77,7 +77,7 @@ namespace MvcMusicStore.Controllers
                     await SignInAsync(user, model.RememberMe);
 
                     _logger.Info("Log in with name {0}", model.UserName);
-                    _counterInstance.CounterHelper.Increment(PerformanceCounters.SuccessfulLogIn);
+                    _counterInstance.CounterHelper?.Increment(PerformanceCounters.SuccessfulLogIn);
 
                     return RedirectToLocal(returnUrl);
                 }
@@ -330,7 +330,7 @@ namespace MvcMusicStore.Controllers
             _logger.Info("User {0} logged off", User.Identity.Name);
 
             AuthenticationManager.SignOut();
-            _counterInstance.CounterHelper.Increment(PerformanceCounters.SuccessfulLogOff);
+            _counterInstance.CounterHelper?.Increment(PerformanceCounters.SuccessfulLogOff);
 
             return RedirectToAction("Index", "Home");
         }

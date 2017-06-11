@@ -1,0 +1,3 @@
+LogParser "SELECT level, COUNT(*) AS Times INTO report_MessagesCount.txt FROM log.csv GROUP BY level ORDER BY Times DESC" -i:TSV -iSeparator:;
+
+LogParser "SELECT datetime, logger, message INTO report_Errors.txt FROM log.csv WHERE level = 'ERROR'" -i:TSV -iSeparator:;

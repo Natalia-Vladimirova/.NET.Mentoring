@@ -28,7 +28,16 @@ Create log report generator using [Log Parser](https://www.microsoft.com/en-us/d
 
 ### Note
 To check work of performance counters:
-+ run cmd as administrator and go to bin folder of MvcMusicStore app;
++ run cmd as administrator and go to **bin** folder of MvcMusicStore app;
 + execute a command: PerformanceCounterHelper.Installer.exe "<path_to_MvcMusicStore>\bin\MvcMusicStore.dll";
-+ open Performance Monitor (press Windows+R and type perfmon);
-+ choose added performance counters
++ open Performance Monitor (press Windows+R and type **perfmon**);
++ choose added performance counters.
+
+To unregister performance counters:
++ run cmd as administrator and go to bin folder of MvcMusicStore app;
++ execute a command: PerformanceCounterHelper.Installer.exe /u "<path_to_MvcMusicStore>\bin\MvcMusicStore.dll".
+
+To generate reports:
++ setup LogParser;
++ register path to LogParser setup folder in **PATH** variable if needed;
++ run commands in LogParserCommands.txt from the **logs** folder of MvcMusicStore app.

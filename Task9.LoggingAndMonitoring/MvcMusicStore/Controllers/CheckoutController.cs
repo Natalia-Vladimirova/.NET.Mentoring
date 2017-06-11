@@ -67,7 +67,7 @@ namespace MvcMusicStore.Controllers
             {
                 _logger.Info("Checkout has been completed (order id: {0}, user: {1})", id, User.Identity.Name);
 
-                _counterInstance.CounterHelper.Increment(PerformanceCounters.SuccessfulCheckout);
+                _counterInstance.CounterHelper?.Increment(PerformanceCounters.SuccessfulCheckout);
 
                 return View(id);
             }
