@@ -4,12 +4,19 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using MvcMusicStore.Models;
 using MvcMusicStore.ViewModels;
+using NLog;
 
 namespace MvcMusicStore.Controllers
 {
     public class ShoppingCartController : Controller
     {
+        private readonly ILogger _logger;
         private readonly MusicStoreEntities _storeContext = new MusicStoreEntities();
+
+        public ShoppingCartController(ILogger logger)
+        {
+            _logger = logger;
+        }
 
         // GET: /ShoppingCart/
         public async Task<ActionResult> Index()
@@ -22,6 +29,8 @@ namespace MvcMusicStore.Controllers
                 CartTotal = await cart.GetTotal()
             };
 
+            _logger.Info("Getting shopping cart (total: {0})", viewModel.CartTotal);
+
             return View(viewModel);
         }
 
@@ -33,6 +42,8 @@ namespace MvcMusicStore.Controllers
             await cart.AddToCart(await _storeContext.Albums.SingleAsync(a => a.AlbumId == id));
 
             await _storeContext.SaveChangesAsync();
+
+            _logger.Info("Adding an item to shopping cart (album id: {0})", id);
 
             return RedirectToAction("Index");
         }
@@ -63,6 +74,8 @@ namespace MvcMusicStore.Controllers
                 DeleteId = id
             };
 
+            _logger.Info(results.Message);
+
             return Json(results);
         }
 
@@ -86,6 +99,7 @@ namespace MvcMusicStore.Controllers
         {
             if (disposing)
             {
+                _logger.Debug("Disposing {0} context in {1} controller", nameof(MusicStoreEntities), nameof(ShoppingCartController));
                 _storeContext.Dispose();
             }
             base.Dispose(disposing);

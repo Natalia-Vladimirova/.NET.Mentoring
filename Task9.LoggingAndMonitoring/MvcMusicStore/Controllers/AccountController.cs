@@ -4,13 +4,18 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
+using MvcMusicStore.Infrastructure;
 using MvcMusicStore.Models;
+using NLog;
 
 namespace MvcMusicStore.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
+        private readonly ILogger _logger;
+        private readonly CounterInstance _counterInstance;
+
         public enum ManageMessageId
         {
             ChangePasswordSuccess,
@@ -23,14 +28,15 @@ namespace MvcMusicStore.Controllers
 
         private UserManager<ApplicationUser> _userManager;
 
-        public AccountController()
-            : this(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
-        {
-        }
+        public AccountController(ILogger logger, CounterInstance counterInstance)
+            : this(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())), logger, counterInstance)
+        { }
 
-        public AccountController(UserManager<ApplicationUser> userManager)
+        public AccountController(UserManager<ApplicationUser> userManager, ILogger logger, CounterInstance counterInstance)
         {
             _userManager = userManager;
+            _logger = logger;
+            _counterInstance = counterInstance;
         }
 
         private IAuthenticationManager AuthenticationManager
@@ -43,9 +49,7 @@ namespace MvcMusicStore.Controllers
             using (var storeContext = new MusicStoreEntities())
             {
                 var cart = ShoppingCart.GetCart(storeContext, this);
-
                 await cart.MigrateCart(userName);
-
                 Session[ShoppingCart.CartSessionKey] = userName;
             }
         }
@@ -71,6 +75,9 @@ namespace MvcMusicStore.Controllers
                 if (user != null)
                 {
                     await SignInAsync(user, model.RememberMe);
+
+                    _logger.Info("Log in with name {0}", model.UserName);
+                    _counterInstance.CounterHelper.Increment(PerformanceCounters.SuccessfulLogIn);
 
                     return RedirectToLocal(returnUrl);
                 }
@@ -101,6 +108,8 @@ namespace MvcMusicStore.Controllers
                 if (result.Succeeded)
                 {
                     await SignInAsync(user, false);
+
+                    _logger.Info("Register with name {0}", model.UserName);
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -173,6 +182,7 @@ namespace MvcMusicStore.Controllers
 
                     if (result.Succeeded)
                     {
+                        _logger.Info("{0}: password has been changed", User.Identity.Name);
                         return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
                     }
 
@@ -317,7 +327,10 @@ namespace MvcMusicStore.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
+            _logger.Info("User {0} logged off", User.Identity.Name);
+
             AuthenticationManager.SignOut();
+            _counterInstance.CounterHelper.Increment(PerformanceCounters.SuccessfulLogOff);
 
             return RedirectToAction("Index", "Home");
         }
@@ -343,6 +356,7 @@ namespace MvcMusicStore.Controllers
         {
             if (disposing && _userManager != null)
             {
+                _logger.Debug("Disposing {0} in {1} controller", nameof(UserManager<ApplicationUser>), nameof(AccountController));
                 _userManager.Dispose();
                 _userManager = null;
             }

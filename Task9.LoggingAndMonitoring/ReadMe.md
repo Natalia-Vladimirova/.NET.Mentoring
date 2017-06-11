@@ -25,3 +25,10 @@ Add logging to the project. It needs to follow the next rules:
 Create log report generator using [Log Parser](https://www.microsoft.com/en-us/download/details.aspx?id=24659) command line or API. The report should contain:
 + total number of records of each type;
 + a list of errors (records with Error code).
+
+### Note
+To check work of performance counters:
++ run cmd as administrator and go to bin folder of MvcMusicStore app;
++ execute a command: PerformanceCounterHelper.Installer.exe "<path_to_MvcMusicStore>\bin\MvcMusicStore.dll";
++ open Performance Monitor (press Windows+R and type perfmon);
++ choose added performance counters
