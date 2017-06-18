@@ -1,21 +1,22 @@
-﻿using NorthwindLibrary;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using CachingSolutionsSamples.Cache;
+using NorthwindLibrary;
 
-namespace CachingSolutionsSamples
+namespace CachingSolutionsSamples.Repositories
 {
-	public class CategoriesManager
+	public class CategoriesManager : IRepository<Category>
 	{
-		private readonly ICategoriesCache _cache;
+		private readonly ICache<Category> _cache;
 
-		public CategoriesManager(ICategoriesCache cache)
+		public CategoriesManager(ICache<Category> cache)
 		{
 			_cache = cache;
 		}
 
-		public IEnumerable<Category> GetCategories()
+		public IEnumerable<Category> GetAll()
 		{
 			Console.WriteLine("Get Categories");
 
@@ -24,7 +25,7 @@ namespace CachingSolutionsSamples
 
 			if (categories == null)
 			{
-				Console.WriteLine("From DB");
+				Console.WriteLine("Load categories from DB");
 
 				using (var dbContext = new Northwind())
 				{

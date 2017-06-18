@@ -1,46 +1,45 @@
 ﻿using System.Collections.Generic;
-using NorthwindLibrary;
-using StackExchange.Redis;
 using System.IO;
 using System.Runtime.Serialization;
+using StackExchange.Redis;
 
-namespace CachingSolutionsSamples
+namespace CachingSolutionsSamples.Cache
 {
-    public class CategoriesRedisCache : ICategoriesCache
-	{
-        private readonly string _prefix = "Cache_Categories";
+    public class RedisCache<T> : ICache<T>
+    {
+        private readonly string _prefix = $"Cache_{typeof(T)}";
 		private readonly ConnectionMultiplexer _redisConnection;
         private readonly DataContractSerializer _serializer;
 
-		public CategoriesRedisCache(string hostName)
+		public RedisCache(string hostName)
 		{
 			_redisConnection = ConnectionMultiplexer.Connect(hostName);
-            _serializer = new DataContractSerializer(typeof(IEnumerable<Category>));
+            _serializer = new DataContractSerializer(typeof(IEnumerable<T>));
         }
 
-		public IEnumerable<Category> Get(string forUser)
+		public IEnumerable<T> Get(string forUser)
 		{
 			var db = _redisConnection.GetDatabase();
 			byte[] value = db.StringGet(_prefix + forUser);
 
 			return value == null
                 ? null
-                : (IEnumerable<Category>)_serializer.ReadObject(new MemoryStream(value));
+                : (IEnumerable<T>)_serializer.ReadObject(new MemoryStream(value));
 		}
 
-		public void Set(string forUser, IEnumerable<Category> categories)
+		public void Set(string forUser, IEnumerable<T> entities)
 		{
 			var db = _redisConnection.GetDatabase();
 			var key = _prefix + forUser;
 
-			if (categories == null)
+			if (entities == null)
 			{
 				db.StringSet(key, RedisValue.Null);
 			}
 			else
 			{
 				var stream = new MemoryStream();
-				_serializer.WriteObject(stream, categories);
+				_serializer.WriteObject(stream, entities);
 				db.StringSet(key, stream.ToArray());
 			}
 		}
