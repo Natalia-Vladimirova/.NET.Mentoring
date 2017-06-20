@@ -20,31 +20,7 @@ namespace CachingSolutionsSamples
             builder.RegisterModule<AutofacModule>();
             _container = builder.Build();
         }
-
-        [TestMethod]
-        public void RedisCategoriesCache()
-        {
-            var manager = _container.ResolveNamed<IRepository<Category>>("RedisCategoriesManager");
-
-            for (var i = 0; i < 10; i++)
-            {
-                Console.WriteLine(manager.GetAll().Count());
-                Thread.Sleep(100);
-            }
-        }
-
-        [TestMethod]
-        public void RedisSupplierCache()
-        {
-            var manager = _container.ResolveNamed<IRepository<Supplier>>("RedisSupplierManager");
-
-            for (var i = 0; i < 10; i++)
-            {
-                Console.WriteLine(manager.GetAll().Count());
-                Thread.Sleep(100);
-            }
-        }
-
+        
         [TestMethod]
         public void RedisRegionCache()
         {

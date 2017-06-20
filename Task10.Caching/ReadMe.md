@@ -19,3 +19,13 @@ Modify the example (CachingSolutionsSamples) to cache data from the database:
 ### Note
 
 To avoid problems with data serialization (when using out-of-process cache) disable LazyLoading and Proxy generation when selecting via Entity Framework.
+  
+Run the following commands to enable broker for database:
+```sql
+USE master;
+GO
+ALTER DATABASE Northwind SET ENABLE_BROKER WITH ROLLBACK IMMEDIATE;
+GO
+USE Northwind;
+GO
+```

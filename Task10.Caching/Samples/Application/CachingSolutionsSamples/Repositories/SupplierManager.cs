@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Caching;
 using System.Threading;
 using CachingSolutionsSamples.Cache;
 using NorthwindLibrary;
@@ -9,11 +10,13 @@ namespace CachingSolutionsSamples.Repositories
 {
     public class SupplierManager : IRepository<Supplier>
     {
-        private readonly ICache<Supplier> _cache;
+        private readonly ICacheWithPolicy<Supplier> _cache;
+        private readonly int _expirationInSeconds;
 
-        public SupplierManager(ICache<Supplier> cache)
+        public SupplierManager(ICacheWithPolicy<Supplier> cache, int expirationInSeconds)
         {
             _cache = cache;
+            _expirationInSeconds = expirationInSeconds;
         }
 
         public IEnumerable<Supplier> GetAll()
@@ -32,7 +35,13 @@ namespace CachingSolutionsSamples.Repositories
                     dbContext.Configuration.LazyLoadingEnabled = false;
                     dbContext.Configuration.ProxyCreationEnabled = false;
                     suppliers = dbContext.Suppliers.ToList();
-                    _cache.Set(user, suppliers);
+
+                    var policy = new CacheItemPolicy
+                    {
+                        AbsoluteExpiration = new DateTimeOffset(DateTime.UtcNow.AddSeconds(_expirationInSeconds))
+                    };
+
+                    _cache.Set(user, suppliers, policy);
                 }
             }
 

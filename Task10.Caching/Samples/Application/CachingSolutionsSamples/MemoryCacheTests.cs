@@ -29,7 +29,7 @@ namespace CachingSolutionsSamples
             for (var i = 0; i < 10; i++)
 			{
 				Console.WriteLine(manager.GetAll().Count());
-				Thread.Sleep(100);
+				Thread.Sleep(500);
 			}
         }
 
@@ -38,7 +38,7 @@ namespace CachingSolutionsSamples
         {
             var manager = _container.ResolveNamed<IRepository<Supplier>>("MemorySupplierManager");
 
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 50; i++)
             {
                 Console.WriteLine(manager.GetAll().Count());
                 Thread.Sleep(100);
@@ -50,7 +50,7 @@ namespace CachingSolutionsSamples
         {
             var manager = _container.ResolveNamed<IRepository<Region>>("MemoryRegionManager");
 
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 50; i++)
             {
                 Console.WriteLine(manager.GetAll().Count());
                 Thread.Sleep(100);

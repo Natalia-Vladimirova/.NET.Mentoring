@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.Configuration;
+using Autofac;
 using Autofac.Core;
 using CachingSolutionsSamples.Cache;
 using CachingSolutionsSamples.Repositories;
@@ -17,24 +18,15 @@ namespace CachingSolutionsSamples.DI
 
         private void LoadCategoryInstances(ContainerBuilder builder)
         {
-            builder.RegisterType<MemoryCache<Category>>()
-                .Named<ICache<Category>>("CategoryMemoryCache");
-
-            builder.RegisterType<RedisCache<Category>>()
-                .WithParameter("hostName", "localhost")
-                .Named<ICache<Category>>("CategoryRedisCache");
-
+            builder.RegisterType<MemoryCacheWithPolicy<Category>>()
+                .Named<ICacheWithPolicy<Category>>("CategoryMemoryCache");
+            
             builder.RegisterType<CategoriesManager>()
                 .WithParameter(new ResolvedParameter(
                             (info, context) => info.Name == "cache",
-                            (info, context) => context.ResolveNamed<ICache<Category>>("CategoryMemoryCache")))
+                            (info, context) => context.ResolveNamed<ICacheWithPolicy<Category>>("CategoryMemoryCache")))
+                .WithParameter("connectionString", ConfigurationManager.ConnectionStrings["Northwind"].ConnectionString)
                 .Named<IRepository<Category>>("MemoryCategoriesManager");
-
-            builder.RegisterType<CategoriesManager>()
-                .WithParameter(new ResolvedParameter(
-                            (info, context) => info.Name == "cache",
-                            (info, context) => context.ResolveNamed<ICache<Category>>("CategoryRedisCache")))
-                .Named<IRepository<Category>>("RedisCategoriesManager");
         }
 
         private void LoadRegionInstances(ContainerBuilder builder)
@@ -61,24 +53,15 @@ namespace CachingSolutionsSamples.DI
 
         private void LoadSupplierInstances(ContainerBuilder builder)
         {
-            builder.RegisterType<MemoryCache<Supplier>>()
-                .Named<ICache<Supplier>>("SupplierMemoryCache");
-
-            builder.RegisterType<RedisCache<Supplier>>()
-                .WithParameter("hostName", "localhost")
-                .Named<ICache<Supplier>>("SupplierRedisCache");
-
+            builder.RegisterType<MemoryCacheWithPolicy<Supplier>>()
+                .Named<ICacheWithPolicy<Supplier>>("SupplierMemoryCache");
+            
             builder.RegisterType<SupplierManager>()
                 .WithParameter(new ResolvedParameter(
                             (info, context) => info.Name == "cache",
-                            (info, context) => context.ResolveNamed<ICache<Supplier>>("SupplierMemoryCache")))
+                            (info, context) => context.ResolveNamed<ICacheWithPolicy<Supplier>>("SupplierMemoryCache")))
+                .WithParameter("expirationInSeconds", 2)
                 .Named<IRepository<Supplier>>("MemorySupplierManager");
-
-            builder.RegisterType<SupplierManager>()
-                .WithParameter(new ResolvedParameter(
-                            (info, context) => info.Name == "cache",
-                            (info, context) => context.ResolveNamed<ICache<Supplier>>("SupplierRedisCache")))
-                .Named<IRepository<Supplier>>("RedisSupplierManager");
         }
     }
 }
