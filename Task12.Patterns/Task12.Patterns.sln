@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Subtask2.ObjectPool", "Subt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Subtask2.ObjectPool.App", "Subtask2.ObjectPool.App\Subtask2.ObjectPool.App.csproj", "{16D96DBC-74FA-4077-960A-00D16DB07BA0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Subtask3.QuestEditor", "Subtask3.QuestEditor\Subtask3.QuestEditor.csproj", "{23072F3B-353D-4333-95BB-37E97BDD810A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Subtask3.QuestEditor.App", "Subtask3.QuestEditor.App\Subtask3.QuestEditor.App.csproj", "{C8FF0D72-7E7E-47C9-9F07-24BB039B1ABB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{16D96DBC-74FA-4077-960A-00D16DB07BA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16D96DBC-74FA-4077-960A-00D16DB07BA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16D96DBC-74FA-4077-960A-00D16DB07BA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23072F3B-353D-4333-95BB-37E97BDD810A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23072F3B-353D-4333-95BB-37E97BDD810A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23072F3B-353D-4333-95BB-37E97BDD810A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23072F3B-353D-4333-95BB-37E97BDD810A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8FF0D72-7E7E-47C9-9F07-24BB039B1ABB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8FF0D72-7E7E-47C9-9F07-24BB039B1ABB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8FF0D72-7E7E-47C9-9F07-24BB039B1ABB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8FF0D72-7E7E-47C9-9F07-24BB039B1ABB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
